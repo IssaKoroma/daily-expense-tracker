@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Expense Tracker</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#e5e5e5;padding:10px}
+.container{background:#f2f2f2;border-radius:15px;padding:15px;max-width:400px;margin:0 auto}
+h1{font-size:26px;margin-bottom:15px}
+h1 span{font-size:28px}
+label{font-size:18px;margin-bottom:5px;display:block}
+select,input{width:100%;padding:14px;border:1.5px solid #333;border-radius:6px;font-size:16px;background:white;margin-bottom:12px}
+hr{border:none;border-top:1.5px solid #999;margin:15px 0}
+.btn{background:#0a7a0a;color:white;border:none;padding:15px;border-radius:2px;font-weight:bold;width:100%;font-size:18px;margin-top:5px}
+table{width:100%;border-collapse:collapse;margin-top:15px}
+th{background:black;color:white;padding:10px;font-size:15px;border:1px solid black}
+td{padding:8px;border:1px solid #999;background:white;font-size:14px;text-align:center}
+.total1{font-weight:bold;font-size:19px;margin-top:18px}
+.total2{font-weight:bold;font-size:19px;margin-top:10px;color:#0a7a0a}
+</style>
+</head>
+<body>
+<div class="container">
+<h1><span>💰</span> Expense Tracker</h1>
+
+<label>Filter by Month:</label>
+<select id="monthFilter" onchange="render()">
+<option value="all">All Months</option>
+<option value="2026-01">January 2026</option>
+<option value="2026-02">February 2026</option>
+<option value="2026-03">March 2026</option>
+<option value="2026-04">April 2026</option>
+<option value="2026-05">May 2026</option>
+<option value="2026-06">June 2026</option>
+<option value="2026-07">July 2026</option>
+<option value="2026-08">August 2026</option>
+<option value="2026-09">September 2026</option>
+<option value="2026-10">October 2026</option>
+<option value="2026-11">November 2026</option>
+<option value="2026-12">December 2026</option>
+<option value="2027-01">January 2027</option>
+<option value="2027-02">February 2027</option>
+<option value="2027-03">March 2027</option>
+<option value="2027-04">April 2027</option>
+<option value="2027-05">May 2027</option>
+<option value="2027-06">June 2027</option>
+<option value="2027-07">July 2027</option>
+<option value="2027-08">August 2027</option>
+<option value="2027-09">September 2027</option>
+<option value="2027-10">October 2027</option>
+<option value="2027-11">November 2027</option>
+<option value="2027-12">December 2027</option>
+<option value="2028-01">January 2028</option>
+<option value="2028-02">February 2028</option>
+<option value="2028-03">March 2028</option>
+<option value="2028-04">April 2028</option>
+<option value="2028-05">May 2028</option>
+<option value="2028-06">June 2028</option>
+<option value="2028-07">July 2028</option>
+<option value="2028-08">August 2028</option>
+<option value="2028-09">September 2028</option>
+<option value="2028-10">October 2028</option>
+<option value="2028-11">November 2028</option>
+<option value="2028-12">December 2028</option>
+</select>
+
+<hr>
+
+<input id="item" placeholder="Item e.g. Rice">
+<input id="amount" type="number" placeholder="Amount">
+<input id="date" type="date" value="2026-09-30">
+
+<button class="btn" onclick="addExpense()">Add Expense</button>
+
+<table>
+<thead><tr><th>Item</th><th>Amount</th><th>Date</th><th>Del</th></tr></thead>
+<tbody id="list"></tbody>
+</table>
+
+<p class="total1">Total for this Month: Le <span id="monthTotal">0</span></p>
+<p class="total2">All Time Total: Le <span id="allTotal">0</span></p>
+</div>
+
+<script>
+let expenses = JSON.parse(localStorage.getItem('my_expenses')||'[]');
+let dateInput = document.getElementById('date');
+if(!dateInput.value) dateInput.valueAsDate = new Date();
+
+function addExpense(){
+let item = document.getElementById('item').value;
+let amt = +document.getElementById('amount').value;
+let d = document.getElementById('date').value;
+if(!item||!amt||!d) return alert('Fill all');
+expenses.push({id:Date.now(),item:item,amount:amt,date:d});
+localStorage.setItem('my_expenses',JSON.stringify(expenses));
+document.getElementById('item').value='';
+document.getElementById('amount').value='';
+render();
+}
+
+function del(id){
+if(confirm('Delete?')){
+expenses = expenses.filter(e=>e.id!=id);
+localStorage.setItem('my_expenses',JSON.stringify(expenses));
+render();
+}
+}
+
+function render(){
+let filter = document.getElementById('monthFilter').value;
+let filtered = filter==='all'? expenses : expenses.filter(e=>e.date.startsWith(filter));
+let html = filtered.map(e=>`<tr><td>${e.item}</td><td>Le ${e.amount}</td><td>${e.date.split('-').reverse().join('/')}</td><td><button onclick="del(${e.id})" style="background:red;color:white;border:none;padding:4px 8px;border-radius:4px">X</button></td></tr>`).join('');
+document.getElementById('list').innerHTML = html || '<tr><td colspan="4">No expenses</td></tr>';
+let monthSum = filtered.reduce((s,e)=>s+e.amount,0);
+let allSum = expenses.reduce((s,e)=>s+e.amount,0);
+document.getElementById('monthTotal').innerText = monthSum.toLocaleString();
+document.getElementById('allTotal').innerText = allSum.toLocaleString();
+}
+render();
+</script>
+</body>
+</html>
