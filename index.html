@@ -1,0 +1,131 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Business Empire Pro - V8 All Months</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}body{background:#0f172a;color:white}
+header{background:#1e293b;padding:15px;text-align:center;border-bottom:2px solid #22c55e}
+header h1{color:#22c55e;font-size:18px}header input{background:#0f172a;border:1px solid #334155;color:white;padding:8px;border-radius:8px;width:85%;margin-top:8px;text-align:center}
+nav{display:flex;overflow-x:auto;background:#1e293b;gap:5px;padding:8px;position:sticky;top:0;z-index:10}
+nav button{background:#334155;color:white;border:none;padding:10px 12px;border-radius:8px;white-space:nowrap;font-size:12px}
+nav button.active{background:#22c55e;color:black;font-weight:bold}
+.page{display:none;padding:12px}.page.active{display:block}
+.card{background:#1e293b;border-radius:12px;padding:14px;margin-bottom:12px;border:1px solid #334155}
+.stat{font-size:22px;color:#22c55e;font-weight:bold}
+input,select{width:100%;padding:11px;margin:6px 0;border-radius:8px;border:1px solid #334155;background:#0f172a;color:white}
+label{font-size:11px;color:#94a3b8;display:block;margin-top:4px}
+.btn{background:#22c55e;color:black;border:none;padding:12px;border-radius:8px;font-weight:bold;width:100%;margin-top:8px}
+.btn2{background:#3b82f6;color:white}
+.btn-danger{background:#ef4444;color:white}
+table{width:100%;border-collapse:collapse;margin-top:8px;font-size:11px}th,td{border:1px solid #334155;padding:5px;text-align:left}th{background:#334155;color:#22c55e}
+.row2{display:flex;gap:6px}.row2>div{flex:1}
+#lockScreen{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#0f172a;z-index:9999;padding:20px;overflow-y:auto;text-align:center}
+.lockBox{background:#1e293b;border:2px solid #ef4444;border-radius:15px;padding:20px;margin-top:20px}
+.payNum{background:#22c55e;color:black;padding:12px;border-radius:10px;font-size:22px;font-weight:bold;margin:10px 0}
+@media print{nav,header input,.btn,#lockScreen,.no-print{display:none} body{background:white;color:black}.card{border:1px solid black;color:black}.stat{color:black} th{background:#ddd!important;color:black!important}}
+</style></head><body>
+<div id="lockScreen"><div style="font-size:50px">🔒</div><h2 style="color:#ef4444">SUBSCRIPTION EXPIRED</h2><p>Your 7 Days Free Trial Finished</p><div class="lockBox"><h3>To Continue</h3><p>Pay <b style="color:#22c55e;font-size:22px">Le 200</b> per month</p><div class="payNum">072039074</div><a href="https://wa.me/23272641385" style="display:block;background:#25D366;color:white;padding:12px;border-radius:8px;text-decoration:none;margin:12px 0;font-weight:bold">💬 WhatsApp Us Now</a><input id="actCode" placeholder="Paste Activation Code"><button class="btn" onclick="activateApp()">✅ ACTIVATE</button></div></div>
+<header><h1>🏢 BUSINESS EMPIRE PRO</h1><input id="bizName" placeholder="Enter Business Name" oninput="saveBiz()"><div style="font-size:10px;color:#22c55e">Le 200/Month | Pay: 072039074 | WhatsApp: 072641385</div></header>
+<nav><button class="active" onclick="showPage('dash',this)">Dashboard</button><button onclick="showPage('stock',this)">Stock</button><button onclick="showPage('sales',this)">Sales</button><button onclick="showPage('debt',this)">Customers Debt</button><button onclick="showPage('cred',this)">Supplier Credit</button><button onclick="showPage('exp',this)">Expenses</button><button onclick="showPage('report',this)">Report</button></nav>
+<div id="dash" class="page active"><div class="card"><div>Total Stock Value</div><div class="stat" id="statStock">Le 0</div></div><div class="card"><div>Total Sales</div><div class="stat" id="statSales">Le 0</div></div><div class="card"><div>Profit</div><div class="stat" id="statProfit">Le 0</div></div><div class="card"><div>Customers Owe You</div><div class="stat" id="statDebt" style="color:#f59e0b">Le 0</div></div><div class="card"><div>You Owe Suppliers</div><div class="stat" id="statCred" style="color:#ef4444">Le 0</div></div><div class="card"><div>Subscription</div><div id="subInfo" style="color:#22c55e;font-weight:bold"></div></div></div>
+<div id="stock" class="page"><div class="card"><h3>Add Stock + Date</h3><input id="sName" placeholder="Item Name"><div class="row2"><div><label>Qty</label><input id="sQty" type="number"></div><div><label>Date</label><input id="sDate" type="date"></div></div><div class="row2"><div><label>Cost</label><input id="sCost" type="number"></div><div><label>Selling</label><input id="sPrice" type="number"></div></div><button class="btn" onclick="addStock()">Add Stock</button></div><div class="card" style="overflow-x:auto"><table><thead><tr><th>Item</th><th>Qty</th><th>Date</th><th>Profit</th><th>X</th></tr></thead><tbody id="stockList"></tbody></table></div></div>
+<div id="sales" class="page"><div class="card"><h3>Record Sale</h3><select id="saleItem"></select><div class="row2"><div><label>Qty Sold</label><input id="saleQty" type="number"></div><div><label>Date</label><input id="saleDate" type="date"></div></div><button class="btn" onclick="makeSale()">Sell Now</button></div><div class="card" style="overflow-x:auto"><table><thead><tr><th>Date</th><th>Item</th><th>Qty</th><th>Amount</th></tr></thead><tbody id="salesList"></tbody></table></div></div>
+<div id="debt" class="page"><div class="card"><h3>Customer Debt</h3><input id="dName" placeholder="Customer Name"><input id="dItem" placeholder="Item e.g 5 Bags Rice"><div class="row2"><div><label>Amount</label><input id="dAmount" type="number"></div><div><label>Phone</label><input id="dPhone"></div></div><div class="row2"><div><label>Date Taken</label><input id="dDateTaken" type="date"></div><div><label>Date to Pay</label><input id="dDatePay" type="date"></div></div><button class="btn" onclick="addDebt()">Add Debtor</button></div><div class="card" style="overflow-x:auto"><table><thead><tr><th>Name</th><th>Item</th><th>Amount</th><th>Taken</th><th>Pay Date</th><th>Paid</th></tr></thead><tbody id="debtList"></tbody></table></div></div>
+<div id="cred" class="page"><div class="card"><h3>Supplier Credit + Date</h3><input id="cName" placeholder="Supplier Name"><input id="cItem" placeholder="Item on Credit"><div class="row2"><div><label>Amount</label><input id="cAmount" type="number"></div><div><label>Date</label><input id="cDate" type="date"></div></div><input id="cNote" placeholder="Note"><button class="btn" onclick="addCred()">Add</button></div><div class="card" style="overflow-x:auto"><table><thead><tr><th>Supplier</th><th>Item</th><th>Amount</th><th>Date</th><th>Paid</th></tr></thead><tbody id="credList"></tbody></table></div></div>
+
+<div id="exp" class="page">
+<div class="card">
+<h3>💰 Expense Tracker</h3>
+<label>Filter by Month:</label>
+<select id="expMonthFilter" onchange="updateAll()">
+<option value="all">All Months</option>
+<option value="2026-01">January 2026</option>
+<option value="2026-02">February 2026</option>
+<option value="2026-03">March 2026</option>
+<option value="2026-04">April 2026</option>
+<option value="2026-05">May 2026</option>
+<option value="2026-06">June 2026</option>
+<option value="2026-07">July 2026</option>
+<option value="2026-08">August 2026</option>
+<option value="2026-09">September 2026</option>
+<option value="2026-10">October 2026</option>
+<option value="2026-11">November 2026</option>
+<option value="2026-12">December 2026</option>
+<option value="2025-01">January 2025</option>
+<option value="2025-02">February 2025</option>
+<option value="2025-03">March 2025</option>
+<option value="2025-04">April 2025</option>
+<option value="2025-05">May 2025</option>
+<option value="2025-06">June 2025</option>
+<option value="2025-07">July 2025</option>
+<option value="2025-08">August 2025</option>
+<option value="2025-09">September 2025</option>
+<option value="2025-10">October 2025</option>
+<option value="2025-11">November 2025</option>
+<option value="2025-12">December 2025</option>
+</select>
+<hr style="margin:12px 0">
+<input id="eName" placeholder="Item e.g. Rice"><input id="eAmount" type="number" placeholder="Amount"><input id="eDate" type="date"><button class="btn" onclick="addExp()">Add Expense</button>
+</div>
+<div class="card" style="overflow-x:auto"><table><thead><tr><th>Item</th><th>Amount</th><th>Date</th><th>Del</th></tr></thead><tbody id="expList"></tbody></table>
+<p style="margin-top:12px;font-weight:bold">Total for this Month: <span id="expMonthTotal" style="color:#22c55e">Le 0</span></p>
+<p style="margin-top:6px;font-weight:bold;color:#22c55e">All Time Total: <span id="expAllTotal">Le 0</span></p>
+</div>
+</div>
+
+<div id="report" class="page">
+<div class="card" id="printArea">
+<h2 style="color:#22c55e;text-align:center">🏢 BUSINESS EMPIRE PRO - FULL REPORT</h2>
+<p style="text-align:center;border:1px solid #334155;padding:5px;border-radius:5px;margin:10px 0" id="rBizName">Issa company</p>
+<p>Business: <b id="rBiz">-</b> | Date: <b id="rDate"></b></p>
+<hr style="margin:10px 0">
+<h3>💰 SUMMARY</h3>
+<p>Profit: <b id="rProfit">Le 0</b></p><p>Total Stock Value: <b id="rStock">Le 0</b></p><p>Total Sales: <b id="rSales">Le 0</b></p><p>Customers Owe You: <b id="rDebt">Le 0</b></p><p>You Owe Suppliers: <b id="rCred">Le 0</b></p>
+<hr style="margin:10px 0"><h3>📦 STOCK LIST</h3><div id="rStockList" style="font-size:11px"></div>
+<hr style="margin:10px 0"><h3>💵 SALES LIST</h3><div id="rSalesList" style="font-size:11px"></div>
+<hr style="margin:10px 0"><h3>👤 CUSTOMERS DEBT</h3><div id="rDebtList" style="font-size:11px"></div>
+<hr style="margin:10px 0"><h3>🏭 SUPPLIER CREDIT</h3><div id="rCredList" style="font-size:11px"></div>
+<hr style="margin:10px 0"><h3>💸 EXPENSES</h3><div id="rExpList" style="font-size:11px"></div>
+<br><button class="btn btn2" onclick="window.print()">🖨️ Print / Save as PDF - All Records</button>
+<div class="no-print" style="margin-top:15px;border-top:1px dashed #ef4444;padding-top:15px">
+<button class="btn btn-danger" onclick="clearAllData()">🗑️ Clear All Data - Delete Everything</button>
+<p style="font-size:10px;color:#94a3b8;text-align:center;margin-top:8px">⚠️ This will delete all Stock, Sales, Debt, Credit, Expenses! Cannot undo!</p>
+</div>
+</div>
+</div>
+<script>
+const SECRET="EMPIRE200"; let stock=JSON.parse(localStorage.getItem('be_stock')||'[]'),sales=JSON.parse(localStorage.getItem('be_sales')||'[]'),debts=JSON.parse(localStorage.getItem('be_debt')||'[]'),creds=JSON.parse(localStorage.getItem('be_cred')||'[]'),exps=JSON.parse(localStorage.getItem('be_exp')||'[]');
+document.getElementById('bizName').value=localStorage.getItem('be_bizName')||'';document.getElementById('rDate').innerText=new Date().toLocaleString();
+let today=new Date().toISOString().split('T')[0];document.querySelectorAll('input[type=date]').forEach(i=>i.value=today);
+if(!localStorage.getItem('be_trialStart')){localStorage.setItem('be_trialStart',Date.now());localStorage.setItem('be_expiry',Date.now()+7*24*60*60*1000);}
+function checkSub(){let exp=+localStorage.getItem('be_expiry')||0;let now=Date.now();let daysLeft=Math.ceil((exp-now)/(24*60*60*1000));let subInfo=document.getElementById('subInfo');let lock=document.getElementById('lockScreen');if(exp && now>exp){lock.style.display='block';subInfo.innerText='EXPIRED - Pay Le 200';subInfo.style.color='#ef4444';return false;}else{if(subInfo)subInfo.innerText=daysLeft>0?daysLeft+' Days Left - Active':'Active';if(lock)lock.style.display='none';return true;}}
+function activateApp(){let code=document.getElementById('actCode').value.trim();if(!code)return alert('Enter code');try{let decoded=atob(code);let parts=decoded.split('|');if(parts[2]!==SECRET)return alert('Invalid');let expiry=+parts[1];localStorage.setItem('be_expiry',expiry);location.reload();}catch(e){alert('Invalid Code');}}
+function saveBiz(){localStorage.setItem('be_bizName',bizName.value);updateAll()}
+function showPage(id,btn){if(!checkSub() && id!=='dash')return;document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');if(id=='report')updateReport()}
+function addStock(){let n=sName.value,q=+sQty.value,c=+sCost.value,p=+sPrice.value,d=sDate.value||today;if(!n||!q)return alert('Fill');stock.push({id:Date.now(),name:n,qty:q,cost:c,price:p,date:d});save('be_stock',stock);sName.value=sQty.value=sCost.value=sPrice.value='';updateAll()}
+function makeSale(){let sel=saleItem.value,q=+saleQty.value,d=saleDate.value||today;if(!sel||!q)return alert('Select');let item=stock.find(s=>s.id==sel);if(!item||item.qty<q)return alert('Not enough');item.qty-=q;sales.push({id:Date.now(),name:item.name,qty:q,amount:q*item.price,profit:q*(item.price-item.cost),date:d});save('be_stock',stock);save('be_sales',sales);updateAll()}
+function addDebt(){let n=dName.value,item=dItem.value,a=+dAmount.value,ph=dPhone.value,dt=dDateTaken.value||today,dp=dDatePay.value||today;if(!n||!a)return alert('Fill Amount!');debts.push({id:Date.now(),name:n,item:item,amount:a,phone:ph,dateTaken:dt,datePay:dp});save('be_debt',debts);dName.value=dItem.value=dAmount.value=dPhone.value='';updateAll()}
+function addCred(){let n=cName.value,item=cItem.value,a=+cAmount.value,note=cNote.value,d=cDate.value||today;if(!n||!a)return alert('Fill');creds.push({id:Date.now(),name:n,item:item,amount:a,note:note,date:d});save('be_cred',creds);cName.value=cItem.value=cAmount.value=cNote.value='';updateAll()}
+function addExp(){let n=eName.value,a=+eAmount.value,d=eDate.value||today;if(!n||!a)return alert('Fill');exps.push({id:Date.now(),name:n,amount:a,date:d});save('be_exp',exps);eName.value=eAmount.value='';updateAll()}
+function delStock(id){stock=stock.filter(s=>s.id!=id);save('be_stock',stock);updateAll()}
+function payDebt(id){if(confirm('Paid?')){debts=debts.filter(d=>d.id!=id);save('be_debt',debts);updateAll()}}
+function payCred(id){if(confirm('Paid?')){creds=creds.filter(c=>c.id!=id);save('be_cred',creds);updateAll()}}
+function delExp(id){exps=exps.filter(e=>e.id!=id);save('be_exp',exps);updateAll()}
+function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function clearAllData(){if(confirm("⚠️ Delete EVERYTHING?")){if(confirm("Last chance! Really DELETE ALL?")){localStorage.removeItem('be_stock');localStorage.removeItem('be_sales');localStorage.removeItem('be_debt');localStorage.removeItem('be_cred');localStorage.removeItem('be_exp');alert("✅ Cleared!");location.reload();}}}
+function updateAll(){checkSub();let stockVal=stock.reduce((s,i)=>s+i.qty*i.cost,0);document.getElementById('statStock').innerText='Le '+stockVal.toLocaleString();document.getElementById('statSales').innerText='Le '+sales.reduce((s,i)=>s+i.amount,0).toLocaleString();document.getElementById('statProfit').innerText='Le '+(sales.reduce((s,i)=>s+i.profit,0)-exps.reduce((s,i)=>s+i.amount,0)).toLocaleString();document.getElementById('statDebt').innerText='Le '+debts.reduce((s,i)=>s+i.amount,0).toLocaleString();document.getElementById('statCred').innerText='Le '+creds.reduce((s,i)=>s+i.amount,0).toLocaleString();document.getElementById('stockList').innerHTML=stock.map(s=>`<tr><td>${s.name}</td><td>${s.qty}</td><td>${s.date}</td><td>Le ${(s.price-s.cost).toLocaleString()}</td><td><button onclick="delStock(${s.id})">X</button></td></tr>`).join('');document.getElementById('saleItem').innerHTML=stock.map(s=>`<option value="${s.id}">${s.name} (${s.qty})</option>`).join('')||'<option>No Stock</option>';document.getElementById('salesList').innerHTML=sales.slice(-20).reverse().map(s=>`<tr><td>${s.date}</td><td>${s.name}</td><td>${s.qty}</td><td>Le ${s.amount.toLocaleString()}</td></tr>`).join('');document.getElementById('debtList').innerHTML=debts.map(d=>`<tr><td>${d.name}</td><td>${d.item||'-'}</td><td>Le ${d.amount.toLocaleString()}</td><td>${d.dateTaken}</td><td style="color:#f59e0b">${d.datePay}</td><td><button onclick="payDebt(${d.id})">Paid</button></td></tr>`).join('');document.getElementById('credList').innerHTML=creds.map(c=>`<tr><td>${c.name}</td><td>${c.item||c.note||'-'}</td><td>Le ${c.amount.toLocaleString()}</td><td>${c.date}</td><td><button onclick="payCred(${c.id})">Paid</button></td></tr>`).join('');
+let filter=document.getElementById('expMonthFilter')?document.getElementById('expMonthFilter').value:'all';
+let filteredExps=filter==='all'?exps:exps.filter(e=>e.date && e.date.startsWith(filter));
+document.getElementById('expList').innerHTML=filteredExps.map(e=>`<tr><td>${e.name}</td><td>Le ${e.amount.toLocaleString()}</td><td>${e.date}</td><td><button onclick="delExp(${e.id})">X</button></td></tr>`).join('');
+let monthTotal=filteredExps.reduce((s,i)=>s+i.amount,0);
+let allTotal=exps.reduce((s,i)=>s+i.amount,0);
+document.getElementById('expMonthTotal').innerText='Le '+monthTotal.toLocaleString();
+document.getElementById('expAllTotal').innerText='Le '+allTotal.toLocaleString();
+if(document.getElementById('report').classList.contains('active'))updateReport();}
+function updateReport(){let biz=localStorage.getItem('be_bizName')||'Issa company';document.getElementById('rBiz').innerText=biz;document.getElementById('rBizName').innerText=biz;document.getElementById('rProfit').innerText=document.getElementById('statProfit').innerText;document.getElementById('rStock').innerText=document.getElementById('statStock').innerText;document.getElementById('rSales').innerText=document.getElementById('statSales').innerText;document.getElementById('rDebt').innerText=document.getElementById('statDebt').innerText;document.getElementById('rCred').innerText=document.getElementById('statCred').innerText;
+document.getElementById('rStockList').innerHTML=stock.length?`<table><tr><th>Item</th><th>Qty</th><th>Date</th><th>Cost</th><th>Selling</th></tr>`+stock.map(s=>`<tr><td>${s.name}</td><td>${s.qty}</td><td>${s.date}</td><td>${s.cost}</td><td>${s.price}</td></tr>`).join('')+`</table>`:'No Stock';
+document.getElementById('rSalesList').innerHTML=sales.length?`<table><tr><th>Date</th><th>Item</th><th>Qty</th><th>Amount</th></tr>`+sales.map(s=>`<tr><td>${s.date}</td><td>${s.name}</td><td>${s.qty}</td><td>Le ${s.amount.toLocaleString()}</td></tr>`).join('')+`</table>`:'No Sales';
+document.getElementById('rDebtList').innerHTML=debts.length?`<table><tr><th>Customer</th><th>Item</th><th>Amount</th><th>Phone</th><th>Taken</th><th>Pay Date</th></tr>`+debts.map(d=>`<tr><td>${d.name}</td><td>${d.item}</td><td>Le ${d.amount.toLocaleString()}</td><td>${d.phone}</td><td>${d.dateTaken}</td><td>${d.datePay}</td></tr>`).join('')+`</table>`:'No Debt';
+document.getElementById('rCredList').innerHTML=creds.length?`<table><tr><th>Supplier</th><th>Item</th><th>Amount</th><th>Date</th></tr>`+creds.map(c=>`<tr><td>${c.name}</td><td>${c.item||c.note}</td><td>Le ${c.amount.toLocaleString()}</td><td>${c.date}</td></tr>`).join('')+`</table>`:'No Supplier Credit';
+document.getElementById('rExpList').innerHTML=exps.length?`<table><tr><th>Date</th><th>Expense</th><th>Amount</th></tr>`+exps.map(e=>`<tr><td>${e.date}</td><td>${e.name}</td><td>Le ${e.amount.toLocaleString()}</td></tr>`).join('')+`</table>`:'No Expenses';
+}
+updateAll();checkSub();
+</script></body></html>
