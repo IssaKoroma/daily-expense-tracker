@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MY PERSONAL EXPENSE - FINAL FIX</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#f5f5f5;padding:15px}
+h2{text-align:center;margin:10px 0}
+select,input{width:100%;padding:14px;margin:8px 0;border:1px solid #ccc;border-radius:8px;font-size:16px;background:#fff}
+.btn{width:100%;padding:15px;background:#16a34a;color:#fff;border:none;border-radius:10px;font-size:18px;font-weight:bold;margin-top:10px}
+table{width:100%;border-collapse:collapse;margin-top:15px;background:#fff;border-radius:10px;overflow:hidden}
+th{background:#111;color:#fff;padding:10px;font-size:13px}
+td{padding:10px;border-bottom:1px solid #eee;font-size:14px}
+.totalBox{background:#fff;padding:15px;border-radius:10px;margin-top:15px;font-weight:bold}
+.delBtn{background:#ef4444;color:#fff;border:none;padding:5px 10px;border-radius:5px}
+</style>
+</head>
+<body>
+
+<h2>💰 My Personal Expense</h2>
+
+<label>Filter by Month:</label>
+<select id="filterMonth"></select>
+
+<input id="itemName" placeholder="Item e.g Rice">
+<input id="itemAmount" type="number" placeholder="Amount e.g 50000">
+<input id="itemDate" type="date">
+
+<button class="btn" onclick="addExpense()">Add Expense</button>
+
+<table id="expTable"></table>
+
+<div class="totalBox">
+<div id="monthTotal">Total for this Month: Le 0</div>
+<div id="allTotal">All Time Total: Le 0</div>
+</div>
+
+<script>
+function fmt(n){ return Number(n).toLocaleString(); }
+let expenses = JSON.parse(localStorage.getItem('myPersonalExpensesV2') || '[]');
+let currentFilter = localStorage.getItem('myFilter') || 'all';
+
+function save(){
+  localStorage.setItem('myPersonalExpensesV2', JSON.stringify(expenses));
+  localStorage.setItem('myFilter', currentFilter);
+}
+
+function getMonthKey(d){ return d ? d.substring(0,7) : ""; }
+
+function buildMonths(){
+  let filter = document.getElementById('filterMonth');
+  let months = new Set();
+  expenses.forEach(e=>{ if(e.date) months.add(getMonthKey(e.date)); });
+  let now = new Date();
+  for(let i=-12;i<12;i++){
+    let d = new Date(now.getFullYear(), now.getMonth()+i, 1);
+    months.add(d.toISOString().substring(0,7));
+  }
+  let sorted = Array.from(months).sort().reverse();
+  filter.innerHTML = '<option value="all">All Months</option>';
+  sorted.forEach(k=>{
+    let d = new Date(k+"-01");
+    let label = d.toLocaleString('en-US',{month:'long',year:'numeric'});
+    filter.innerHTML += `<option value="${k}">${label}</option>`;
+  });
+  filter.value = currentFilter;
+}
+
+document.getElementById('filterMonth').addEventListener('change', function(){
+  currentFilter = this.value;
+  save();
+  renderTable();
+});
+
+function addExpense(){
+  let item = itemName.value.trim();
+  let amt = parseInt(itemAmount.value);
+  let dt = itemDate.value;
+  if(!item || !amt || !dt){ alert('Fill all'); return; }
+  expenses.push({item, amount:amt, date:dt, id:Date.now()});
+  save();
+  itemName.value=''; itemAmount.value='';
+  buildMonths();
+  renderTable();
+}
+
+function deleteExp(id){
+  if(!confirm('Delete?')) return;
+  expenses = expenses.filter(e=>e.id!==id);
+  save();
+  buildMonths();
+  renderTable();
+}
+
+function renderTable(){
+  let filtered = expenses;
+  if(currentFilter!=="all"){
+    filtered = expenses.filter(e=> getMonthKey(e.date)===currentFilter );
+  }
+  filtered.sort((a,b)=> new Date(b.date)-new Date(a.date));
+
+  let html = '<tr><th>Item</th><th>Amount</th><th>Date</th><th>Del</th></tr>';
+  if(filtered.length===0){
+    html+='<tr><td colspan=4 style="text-align:center;padding:20px">No expenses for this month</td></tr>';
+  }else{
+    filtered.forEach(e=>{
+      html+=`<tr><td>${e.item}</td><td>Le ${fmt(e.amount)}</td><td>${e.date}</td><td><button class="delBtn" onclick="deleteExp(${e.id})">X</button></td></tr>`;
+    });
+  }
+  expTable.innerHTML = html;
+
+  let monthTotal = currentFilter==="all" ? expenses.reduce((a,b)=>a+b.amount,0) : expenses.filter(e=>getMonthKey(e.date)===currentFilter).reduce((a,b)=>a+b.amount,0);
+  let allTotal = expenses.reduce((a,b)=>a+b.amount,0);
+
+  monthTotalEl = document.getElementById('monthTotal');
+  let label = currentFilter==="all" ? "All Months" : document.getElementById('filterMonth').options[document.getElementById('filterMonth').selectedIndex]?.text;
+  monthTotalEl.innerText = `Total for ${label}: Le ${fmt(monthTotal)}`;
+  document.getElementById('allTotal').innerText = `All Time Total: Le ${fmt(allTotal)}`;
+}
+
+itemDate.valueAsDate = new Date();
+buildMonths();
+renderTable();
+</script>
+</body>
+</html>
